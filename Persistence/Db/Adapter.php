@@ -41,7 +41,7 @@ class Zf_Persistence_Db_Adapter
     {
         if (null === $this->_db) {
             if (!Zend_Registry::isRegistered('Zend_Db')) {
-                throw new Zf_Dao_Exception('Zend_Db is not registered');
+                throw new Zf_Persistence_Exception('Zend_Db is not registered');
             }
             $this->setAdapter(Zend_Registry::get('Zend_Db'));
         }
