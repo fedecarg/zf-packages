@@ -83,8 +83,6 @@ class Zf_Controller_Front
     {
         if (null === $this->_request) {
             $uri = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
-            print $uri . ' -- ';
-            echo $_SERVER['REQUEST_URI']; die;
             $uri = $this->filter($uri, array('\s\+\/:'));
             $this->setRequest(new Zend_Controller_Request_Http($uri));
         }
