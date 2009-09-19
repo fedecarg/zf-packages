@@ -16,7 +16,7 @@
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
  * @version     $Id: $
  */
-abstract class Zf_Persistence_Db_Adapter
+abstract class Zf_Persistence_Db
 {
     /**
      * @var Zend_Db_Adapter_Abstract|null

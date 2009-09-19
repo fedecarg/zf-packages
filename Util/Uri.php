@@ -77,7 +77,7 @@ class Zf_Util_Uri
      */
     public function getUriScheme()
     {
-    	$urlScheme = 'http';
+        $urlScheme = 'http';
         if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])) {
             $urlScheme .= 's';
         }
@@ -140,9 +140,10 @@ class Zf_Util_Uri
      */
     public function getClientIp()
     {
+        $clientIp = 'unknown';
         if (!empty($_SERVER['REMOTE_ADDR'])) {
             $clientIp = $_SERVER['REMOTE_ADDR'];
-        } else {
+        } elseif (function_exists('apache_getenv')) {
             $clientIp = apache_getenv('REMOTE_ADDR');
 
             if (empty($clientIp)) {
