@@ -135,6 +135,6 @@ class Zf_DataSource_Dao_Mapper
      */
     public function getObject()
     {
-        return (object) $this->toArray();
+        return (object) $this->getRow();
     }
 }
