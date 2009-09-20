@@ -106,6 +106,7 @@ class Zf_DataSource_Dao_Mapper
             $property = $map[$field];
             if (!property_exists($entity, $property)) {
                 $message = sprintf('Property "%s" not defined in %s', $property, get_class($entity));
+                throw new Zf_DataSource_Dao_Exception($message);
             }
             $entity->$property = $value;
         }
