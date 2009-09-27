@@ -26,10 +26,6 @@ class Zf_Domain_Entity
     public function define(array $properties)
     {
         foreach ($properties as $property => $value) {
-            if (!property_exists($this, $property)) {
-                $message = sprintf('Property "%s" not defined in %s', $property, get_class($this));
-                throw new Zf_Domain_Exception($message);
-            }
             $this->$property = $value;
         }
     }
