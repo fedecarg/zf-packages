@@ -19,7 +19,7 @@
 class Zf_DataSource_Dao_Mapper
 {
     /**
-     * @var array Maps database fields to object properties 
+     * @var array Database fields mapped to object properties 
      */
     protected $_map = array();
     
@@ -27,6 +27,11 @@ class Zf_DataSource_Dao_Mapper
      * @var Zf_Domain_Entity
      */
     protected $_entity = null;
+    
+    /**
+     * @var object
+     */
+    protected $_dao = null;
     
     /**
      * Constructor
@@ -67,6 +72,31 @@ class Zf_DataSource_Dao_Mapper
     }
     
     /**
+     * Set DAO.
+     *
+     * @param object $dao
+     * @return void
+     */
+    public function setDao($dao)
+    {
+        $this->_dao = $dao;
+    }
+    
+    /**
+     * Return DAO.
+     *
+     * @return object
+     * @throws Zf_DataSource_Dao_Exception
+     */
+    public function getDao()
+    {
+        if (null === $this->_dao) {
+            throw new Zf_DataSource_Dao_Exception('DAO not defined');
+        }
+        return $this->_dao;
+    }
+    
+    /**
      * Set map between database fields and object properties. 
      *
      * @param array $map
@@ -88,7 +118,18 @@ class Zf_DataSource_Dao_Mapper
     }
     
     /**
-     * Populate object properities with the given values of an array.
+     * Append fields to the map array.
+     *
+     * @param array (field => property)
+     * @return void
+     */
+    public function append(array $fields) 
+    {
+        $this->setMap(array_merge($this->getMap(), $fields));
+    }
+    
+    /**
+     * Populate Zf_Domain_Entity properities with the given values of an array.
      *
      * @param array $row
      * @return void
@@ -96,10 +137,9 @@ class Zf_DataSource_Dao_Mapper
      */
     public function map(array $row)
     {
-    	$entity = $this->getEntity();
-    	$map = $this->getMap();
-    	
+    	$entity = $this->getEntity();    	
         foreach ($row as $field => $value) {
+        	$map = $this->getMap();
             if (!array_key_exists($field, $map)) {
                 throw new Zf_DataSource_Dao_Exception(sprintf('No such field "%s"', $field));
             }
@@ -115,7 +155,7 @@ class Zf_DataSource_Dao_Mapper
     }
     
     /**
-     * Returns an array containing all of the fields and entity values. 
+     * Returns an array containing all of the fields and values. 
      *
      * @return array
      */
@@ -126,16 +166,7 @@ class Zf_DataSource_Dao_Mapper
         foreach ($this->getMap() as $field => $property) {
         	$array[$field] = $entity->$property;
         }
+        
         return $array;
-    }
-    
-    /**
-     * Returns an instance of stdClass.
-     *
-     * @return stdClass
-     */
-    public function getObject()
-    {
-        return (object) $this->getRow();
     }
 }
