@@ -17,7 +17,7 @@
 class Zf_Db_ReplicationAdapter
 {
     const CONFIG_ARRAY        = 'db_config_array';
-	const CONNECTION          = 'db_connection_%s';
+    const CONNECTION          = 'db_connection_%s';
     const FAILED_CONNECTIONS  = 'db_failed_connections';
     const ZEND_CACHE          = 'Zend_Cache';
     
@@ -43,7 +43,7 @@ class Zf_Db_ReplicationAdapter
      */
     public function getConnection($server)
     {
-    	$server = strtolower($server);
+        $server = strtolower($server);
         $key = sprintf(self::CONNECTION, ucfirst(strtolower($server)));
         if (Zend_Registry::isRegistered($key)) {
             return Zend_Registry::get($key);
@@ -61,10 +61,10 @@ class Zf_Db_ReplicationAdapter
         if ('master' === $server) {
             $servers = array_slice($servers, 0, $masterServers);
         } elseif ('slave' === $server) {
-        	$masterRead = (isset($config['master_read'])) ? $config['master_read'] : false;
-        	if (false === $masterRead) {
-        		$servers = array_slice($servers, $masterServers, count($servers), true);
-        	}
+            $masterRead = (isset($config['master_read'])) ? $config['master_read'] : false;
+            if (false === $masterRead) {
+                $servers = array_slice($servers, $masterServers, count($servers), true);
+            }
         }
         
         $failed = array();
@@ -85,7 +85,7 @@ class Zf_Db_ReplicationAdapter
                 return $connection;
             }
             if (Zend_Registry::isRegistered(self::ZEND_CACHE)) {
-            	$failed[] = $key;
+                $failed[] = $key;
                 $this->storeFailedConnections($failed);
             }
         }
@@ -103,12 +103,12 @@ class Zf_Db_ReplicationAdapter
      */
     public function createConnection($server, $config)
     {
-    	foreach ($config as $key => $value) {
-    		if ('servers' !== $key && !array_key_exists($key, $server)) {
-    			$server[$key] = $value;
-    		}
-    	}
-    	
+        foreach ($config as $key => $value) {
+            if ('servers' !== $key && !array_key_exists($key, $server)) {
+                $server[$key] = $value;
+            }
+        }
+        
         $db = Zend_Db::factory($config['adapter'], $server);
         if ($this->hasConnection($db)) {
             return $db;
