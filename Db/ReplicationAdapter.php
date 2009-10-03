@@ -15,7 +15,7 @@
  * @version     $Id: $
  */
 class Zf_Db_ReplicationAdapter
-{
+{  
     const CONFIG_ARRAY        = 'db_config_array';
     const CONNECTION          = 'db_connection_%s';
     const FAILED_CONNECTIONS  = 'db_failed_connections';
@@ -47,24 +47,6 @@ class Zf_Db_ReplicationAdapter
         $key = sprintf(self::CONNECTION, ucfirst(strtolower($server)));
         if (Zend_Registry::isRegistered($key)) {
             return Zend_Registry::get($key);
-        } elseif (!Zend_Registry::isRegistered(self::CONFIG_ARRAY)) {
-            throw new Zf_Db_Exception('Config array undefined: ' . self::CONFIG_ARRAY);
-        }
-        
-        $config = Zend_Registry::get(self::CONFIG_ARRAY);
-        if ($config instanceof Zend_Config) {
-            $config = $config->toArray();
-        }
-        
-        $servers = (isset($config['servers'])) ? $config['servers'] : array();
-        $masterServers = (isset($config['master_servers'])) ? $config['master_servers'] : 1;
-        if ('master' === $server) {
-            $servers = array_slice($servers, 0, $masterServers);
-        } elseif ('slave' === $server) {
-            $masterRead = (isset($config['master_read'])) ? $config['master_read'] : false;
-            if (false === $masterRead) {
-                $servers = array_slice($servers, $masterServers, count($servers), true);
-            }
         }
         
         $failed = array();
@@ -74,19 +56,21 @@ class Zf_Db_ReplicationAdapter
             $failed = ($result && is_array($result)) ? $result : $failed;
         }
         
+        $servers = $this->getListOfServers($server);
         $keys = (array) array_rand($servers, count($servers));
         foreach ($keys as $i => $key) {
             if (in_array($key, $failed)) {
                 continue;
             }
-            $connection = $this->createConnection($servers[$key], $config);
+            $connection = $this->createConnection($servers[$key]);
             if ($connection instanceof Zend_Db_Adapter_Abstract) {
                 $this->setConnection($connection, $server);
                 return $connection;
             }
             if (Zend_Registry::isRegistered(self::ZEND_CACHE)) {
                 $failed[] = $key;
-                $this->storeFailedConnections($failed);
+                $cache = Zend_Registry::get(self::ZEND_CACHE);
+                $cache->save(array_unique($failed), self::FAILED_CONNECTIONS);
             }
         }
         
@@ -94,15 +78,59 @@ class Zf_Db_ReplicationAdapter
     }
     
     /**
+     * Return list of database servers that will be used to create a 
+     * connection.
+     * 
+     * @param null|string Exclude suppliers or consumers servers.
+     * @return array
+     */
+    public function getListOfServers($exclude)
+    {
+        $config = $this->getConfigFromRegistry();
+        $servers = (isset($config['servers'])) ? $config['servers'] : array();
+        $masterServers = (isset($config['master_servers'])) ? $config['master_servers'] : 1;
+        if ('master' === $exclude) {
+            $servers = array_slice($servers, 0, $masterServers);
+        } elseif ('slave' === $exclude) {
+            $masterRead = (isset($config['master_read'])) ? $config['master_read'] : false;
+            if (false === $masterRead) {
+                $servers = array_slice($servers, $masterServers, count($servers), true);
+            }
+        }
+        return $servers;
+    }
+    
+    /**
+     * Retrieve configuration array from Zend_Registry.
+     *
+     * @return array
+     * @throws Zf_Db_Exception
+     */
+    public function getConfigFromRegistry()
+    {
+        if (!Zend_Registry::isRegistered(self::CONFIG_ARRAY)) {
+            throw new Zf_Db_Exception('Config array undefined: ' . self::CONFIG_ARRAY);
+        }
+        
+        $config = Zend_Registry::get(self::CONFIG_ARRAY);
+        if ($config instanceof Zend_Config) {
+            $config = $config->toArray();
+            Zend_Registry::set(self::CONFIG_ARRAY, $config);
+        }
+        
+        return $config;
+    }
+    
+    /**
      * Create an instance of the adapter class.
      *
      * @param array $server Server info
-     * @param array $config Configuration array
      * @return Zend_Db_Adapter_Abstract|false
      * @see Zend_Db
      */
-    public function createConnection($server, $config)
+    public function createConnection($server)
     {
+        $config = $this->getConfigFromRegistry();
         foreach ($config as $key => $value) {
             if ('servers' !== $key && !array_key_exists($key, $server)) {
                 $server[$key] = $value;
@@ -112,9 +140,9 @@ class Zf_Db_ReplicationAdapter
         $db = Zend_Db::factory($config['adapter'], $server);
         if ($this->hasConnection($db)) {
             return $db;
-        } 
-        return false;
+        }
         
+        return false;    
     }
     
     /**
@@ -130,17 +158,5 @@ class Zf_Db_ReplicationAdapter
         } catch (Exception $e) {
             return false;
         }
-    }
-    
-    /**
-     * Store failed connection indexes into a cache record.
-     *
-     * @param array $indexes Failed connections
-     * @return boolean
-     */
-    public function storeFailedConnections($indexes)
-    {
-        $cache = Zend_Registry::get(self::ZEND_CACHE);
-        return $cache->save(array_unique($indexes), self::FAILED_CONNECTIONS);
     }
 }
