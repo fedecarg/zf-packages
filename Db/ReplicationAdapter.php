@@ -17,8 +17,12 @@
 class Zf_Db_ReplicationAdapter
 {  
     const CONFIG_ARRAY        = 'db_config_array';
-    const CONNECTION          = 'db_connection_%s';
+    const ACTIVE_CONNECTION   = 'db_connection_%s';
     const FAILED_CONNECTIONS  = 'db_failed_connections';
+    
+    const SUPPLIER_SERVER     = 'master';
+    const CONSUMER_SERVER     = 'slave';
+    
     const ZEND_CACHE          = 'Zend_Cache';
     
     /**
@@ -30,7 +34,7 @@ class Zf_Db_ReplicationAdapter
      */
     public function setConnection(Zend_Db_Adapter_Abstract $conn, $server)
     {
-        $key = sprintf(self::CONNECTION, ucfirst(strtolower($server)));
+        $key = sprintf(self::ACTIVE_CONNECTION, ucfirst(strtolower($server)));
         Zend_Registry::set($key, $conn);
     }
     
@@ -44,7 +48,7 @@ class Zf_Db_ReplicationAdapter
     public function getConnection($server)
     {
         $server = strtolower($server);
-        $key = sprintf(self::CONNECTION, ucfirst(strtolower($server)));
+        $key = sprintf(self::ACTIVE_CONNECTION, ucfirst(strtolower($server)));
         if (Zend_Registry::isRegistered($key)) {
             return Zend_Registry::get($key);
         }
@@ -81,17 +85,17 @@ class Zf_Db_ReplicationAdapter
      * Return list of database servers that will be used to create a 
      * connection.
      * 
-     * @param null|string Exclude suppliers or consumers servers.
+     * @param string $server List of suppliers or consumers servers.
      * @return array
      */
-    public function getListOfServers($exclude)
+    public function getListOfServers($server)
     {
         $config = $this->getConfigFromRegistry();
         $servers = (isset($config['servers'])) ? $config['servers'] : array();
         $masterServers = (isset($config['master_servers'])) ? $config['master_servers'] : 1;
-        if ('master' === $exclude) {
+        if (self::SUPPLIER_SERVER === $server) {
             $servers = array_slice($servers, 0, $masterServers);
-        } elseif ('slave' === $exclude) {
+        } elseif (self::CONSUMER_SERVER === $server) {
             $masterRead = (isset($config['master_read'])) ? $config['master_read'] : false;
             if (false === $masterRead) {
                 $servers = array_slice($servers, $masterServers, count($servers), true);
