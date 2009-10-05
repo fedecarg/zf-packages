@@ -34,8 +34,8 @@ class Zf_Db_ReplicationAdapter
      */
     public function setConnection(Zend_Db_Adapter_Abstract $conn, $server)
     {
-        $key = sprintf(self::ACTIVE_CONNECTION, ucfirst(strtolower($server)));
-        Zend_Registry::set($key, $conn);
+        $namespace = sprintf(self::ACTIVE_CONNECTION, strtolower($server));
+        Zend_Registry::set($namespace, $conn);
     }
     
     /**
@@ -48,9 +48,9 @@ class Zf_Db_ReplicationAdapter
     public function getConnection($server)
     {
         $server = strtolower($server);
-        $key = sprintf(self::ACTIVE_CONNECTION, ucfirst(strtolower($server)));
-        if (Zend_Registry::isRegistered($key)) {
-            return Zend_Registry::get($key);
+        $namespace = sprintf(self::ACTIVE_CONNECTION, $server);
+        if (Zend_Registry::isRegistered($namespace)) {
+            return Zend_Registry::get($namespace);
         }
         
         $failed = array();
@@ -85,7 +85,7 @@ class Zf_Db_ReplicationAdapter
      * Return list of database servers that will be used to create a 
      * connection.
      * 
-     * @param string $server List of suppliers or consumers servers.
+     * @param string $server master (supplier) or slave (consumers)
      * @return array
      */
     public function getListOfServers($server)
