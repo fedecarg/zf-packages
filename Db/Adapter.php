@@ -55,18 +55,13 @@ class Zf_Db_Adapter
     /**
      * Create an instance of the adapter class.
      *
-     * @return Zend_Db_Adapter_Abstract|false
+     * @return Zend_Db_Adapter_Abstract
      * @see Zend_Db
      */
     public function createConnection()
     {
         $config = $this->getConfigFromRegistry();
-        $db = Zend_Db::factory($config['adapter'], $config);
-        if ($this->hasConnection($db)) {
-            return $db;
-        }
-        
-        return false;    
+        return Zend_Db::factory($config['adapter'], $config);   
     }
     
     /**
