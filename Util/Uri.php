@@ -97,43 +97,6 @@ class Zf_Util_Uri
     }
 
     /**
-     * Sets the parameter values.
-     *
-     * @param array $urlParams Action controller param array
-     * @param array $registerArray Key/value pairs, E.g: array(key=>val, key=>val)
-     * @return array
-     * @see Trex_Module_Abstract::setParamValues()
-     */
-    public function setParamValues(array $urlParams, array $registerArray)
-    {
-        // Convert numerical array to associative array
-        if (count($registerArray) > 0 && !array_key_exists(0, $registerArray)) {
-            $i=0;
-            $tmpParams = array();
-            foreach ($registerArray as $key => $val) {
-                $tmpParams[$key] = (isset($urlParams[$i])) ? $urlParams[$i] : $val;
-                $i++;
-            }
-            $urlParams = $tmpParams;
-        }
-
-        $newUrlParams = $urlParams;
-        foreach ($registerArray as $paramKey => $paramValue) {
-            if (!isset($urlParams[$paramKey])) {
-                if ($paramValue === null) {
-                    $newUrlParams[$paramKey] = null;
-                } elseif (is_numeric($paramValue)) {
-                    $newUrlParams[$paramKey] = (int)$paramValue;
-                } else {
-                    $newUrlParams[$paramKey] = (string)$paramValue;
-                }
-            }
-        }
-
-        return $newUrlParams;
-    }
-
-    /**
      * Returns the IP address from which the user is viewing the current page.
      *
      * @return string
