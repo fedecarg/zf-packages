@@ -74,7 +74,7 @@ class Zf_Db_ReplicationAdapter
             if (Zend_Registry::isRegistered(self::ZEND_CACHE)) {
                 $failed[] = $key;
                 $cache = Zend_Registry::get(self::ZEND_CACHE);
-                $cache->save(array_unique($failed), self::FAILED_CONNECTIONS);
+                $cache->save(array_unique($failed), self::FAILED_CONNECTIONS, array(), 30);
             }
         }
         
