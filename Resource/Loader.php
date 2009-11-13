@@ -17,6 +17,32 @@
 class Zf_Resource_Loader
 {
     /**
+     * @var null|string Class path
+     */
+    protected $_classPath = null;
+    
+    /**
+     * Set class path.
+     *
+     * @param string $path
+     * @return void
+     */
+    public function setClassPath($path)
+    {
+        $this->_classPath = $path;    
+    }
+    
+    /**
+     * Return class path.
+     *
+     * @return string|null
+     */
+    public function getClassPath()
+    {
+        return $this->_classPath;    
+    }
+    
+    /**
      * Set resource.
      * 
      * @param string $resourceName
@@ -29,44 +55,68 @@ class Zf_Resource_Loader
     }
     
     /**
-     * Return model oject.
+     * Return resource.
      * 
-     * @param string $name Model name
-     * @return object|boolean Resource or false
+     * @param string $className
+     * @param string $classPath
+     * @return Zf_Resource_LoaderAdapter
      */
-    public function getModel($name)
+    public function getResource($className, $classPath)
     {
-        $className = $name . 'Model';
         $resourceName = 'Resource_' . $className;
         if (!Zend_Registry::isRegistered($resourceName)) {
-            $dir = APPLICATION_PATH . '/models';
-            require_once $dir.'/'.$className.'.php';
+            require_once $classPath.'/'.$className.'.php';
             $obj = new $className;
-            if ($obj instanceof Zf_Model_Abstract) {
-                $obj->setClassPath($dir.'/'.$name);
+            if ($obj instanceof Zf_Resource_LoaderAdapter) {
+                $obj->setClassPath($classPath.'/'.basename($classPath));
                 $obj->setResourceLoader($this);
             }
             $this->setResource($resourceName, $obj); 
         }
-        return Zend_Registry::get($resourceName); 
+        
+        return Zend_Registry::get($resourceName);
+    }
+    
+    /**
+     * Return a sigle instance of a given model name.
+     * 
+     * @param string $name Model name
+     * @return Zf_Resource_LoaderAdapter
+     */
+    public function getModel($name)
+    {
+        $className = $name . 'Model';
+        $classPath = APPLICATION_PATH . '/models';
+        
+        return $this->getResource($className, $classPath);
+
+    }
+    
+    /**
+     * Return a sigle instance of a given service name.
+     * 
+     * @param string $name Service name
+     * @return Zf_Resource_LoaderAdapter
+     */
+    public function getService($name)
+    {
+        $className = $name . 'Service';
+        $classPath = APPLICATION_PATH . '/services';
+        
+        return $this->getResource($className, $classPath);
     }
     
     /**
      * Return DAO.
      * 
      * @param string $name DAO name
-     * @return object|boolean Resource or false
+     * @return object Instance of DB Adapter
      */
     public function getDao($name)
     {
         $className = $name . 'Dao';
-        $resourceName = 'Resource_' . $className;
-        if (!Zend_Registry::isRegistered($resourceName)) {
-            $dir = APPLICATION_PATH . '/daos';
-            require_once $dir.'/'.$className.'.php';
-            $obj = new $className;
-            $this->setResource($resourceName, $obj); 
-        }
-        return Zend_Registry::get($resourceName); 
+        $classPath = APPLICATION_PATH . '/daos';
+        
+        return $this->getResource($className, $classPath);
     }
 }
