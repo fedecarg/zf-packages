@@ -110,61 +110,39 @@ abstract class Zf_Controller_Action
     }
     
     /**
-     * Set resource.
+     * Set resource loader.
      * 
-     * @param object $object
-     * @param string $id
+     * @param Zf_Resource_Loader
      * @return void
      */
-    public function setResource($object, $id)
+    public function setResourceLoader(Zf_Resource_Loader $object)
     {
-        Zend_Registry::set($id, $object);
+        $this->_resourceLoader = $object;
     }
     
     /**
-     * Return resource.
+     * Return resource loader.
      * 
-     * @param string $name Resource name
-     * @param string $class Class name
-     * @param string $directory Resource directory: services, models, etc.
-     * @return object|boolean Resource or false
+     * @return Zf_Resource_Loader
      */
-    public function getResource($name, $class, $directory)
+    public function getResourceLoader()
     {
-        $id = 'Resource_' . $class;
-        if (!Zend_Registry::isRegistered($id)) {
-            require_once APPLICATION_PATH . '/'. $directory . '/' . $class . '.php';
-            $instance = new $class;
-            if ($instance instanceof Zf_Model_Abstract) {
-                $instance->setModelName($name);
-            }
-            $this->setResource($instance, $id); 
+        if (null === $this->_resourceLoader) {
+            $this->setResourceLoader(new Zf_Resource_Loader()); 
         }
-        return Zend_Registry::get($id); 
+        
+        return $this->_resourceLoader; 
     }
     
     /**
-     * Return model.
+     * Return service object.
      * 
-     * @param string $name
-     * @return object Model
-     */
-    public function getModel($name)
-    {
-        $class = $name . 'Model';
-        return $this->getResource($name, $class, 'models');
-    }
-    
-    /**
-     * Return service.
-     * 
-     * @param string $name
-     * @return object Service
+     * @param string $name Service name
+     * @return Zf_Resource_ProxyLoader
      */
     public function getService($name)
     {
-        $class = $name . 'Service';
-        return $this->getResource($name, $class, 'services');
+        return $this->getResourceLoader()->getService($name); 
     }
     
     /**
