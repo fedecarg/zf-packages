@@ -14,5 +14,5 @@
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
  * @version     $Id: $
  */
-class Sky_DataSource_Exception extends Zend_Exception
+class Zf_DataSource_Exception extends Zend_Exception
 {}
