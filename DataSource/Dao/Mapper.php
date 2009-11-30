@@ -68,7 +68,7 @@ class Zf_DataSource_Dao_Mapper
         if (null === $this->_entity) {
             throw new Zf_DataSource_Dao_Exception('Entity not defined');
         }
-        return $this->_entity;
+        return clone $this->_entity;
     }
     
     /**
