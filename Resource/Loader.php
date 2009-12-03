@@ -17,32 +17,6 @@
 class Zf_Resource_Loader
 {
     /**
-     * @var null|string Class path
-     */
-    protected $_classPath = null;
-    
-    /**
-     * Set class path.
-     *
-     * @param string $path
-     * @return void
-     */
-    public function setClassPath($path)
-    {
-        $this->_classPath = $path;    
-    }
-    
-    /**
-     * Return class path.
-     *
-     * @return string|null
-     */
-    public function getClassPath()
-    {
-        return $this->_classPath;    
-    }
-    
-    /**
      * Set resource.
      * 
      * @param string $resourceName
@@ -57,11 +31,23 @@ class Zf_Resource_Loader
     /**
      * Return resource.
      * 
+     * @param string $resourceName
+     * @return object
+     */
+    public function getResource($resourceName)
+    {        
+        return Zend_Registry::get($resourceName);
+    }
+    
+    
+    /**
+     * Create resource.
+     * 
      * @param string $className
      * @param string $classPath
      * @return Zf_Resource_LoaderAdapter
      */
-    public function getResource($className, $classPath)
+    public function createResource($className, $classPath)
     {
         $resourceName = 'Resource_' . $className;
         if (!Zend_Registry::isRegistered($resourceName)) {
@@ -74,11 +60,11 @@ class Zf_Resource_Loader
             $this->setResource($resourceName, $obj); 
         }
         
-        return Zend_Registry::get($resourceName);
+        return $this->getResource($resourceName);
     }
     
     /**
-     * Return a sigle instance of a given model name.
+     * Return a sigle instance of a model object.
      * 
      * @param string $name Model name
      * @return Zf_Resource_LoaderAdapter
@@ -88,12 +74,12 @@ class Zf_Resource_Loader
         $className = $name . 'Model';
         $classPath = APPLICATION_PATH . '/models';
         
-        return $this->getResource($className, $classPath);
+        return $this->createResource($className, $classPath);
 
     }
     
     /**
-     * Return a sigle instance of a given service name.
+     * Return a sigle instance of a service object.
      * 
      * @param string $name Service name
      * @return Zf_Resource_LoaderAdapter
@@ -103,20 +89,20 @@ class Zf_Resource_Loader
         $className = $name . 'Service';
         $classPath = APPLICATION_PATH . '/services';
         
-        return $this->getResource($className, $classPath);
+        return $this->createResource($className, $classPath);
     }
     
     /**
-     * Return DAO.
+     * Return a sigle instance of a data access object.
      * 
-     * @param string $name DAO name
-     * @return object Instance of DB Adapter
+     * @param string $name
+     * @return object
      */
     public function getDao($name)
     {
         $className = $name . 'Dao';
         $classPath = APPLICATION_PATH . '/daos';
         
-        return $this->getResource($className, $classPath);
+        return $this->createResource($className, $classPath);
     }
 }

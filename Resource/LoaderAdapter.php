@@ -22,6 +22,33 @@ class Zf_Resource_LoaderAdapter
     protected $_resourceLoader = null;
     
     /**
+     * @var null|string Class path
+     */
+    protected $_classPath = null;
+    
+    /**
+     * Set path to class.
+     *
+     * @param string $path
+     * @return void
+     */
+    public function setClassPath($path)
+    {
+        $this->_classPath = $path;    
+    }
+    
+    
+    /**
+     * Return class path.
+     *
+     * @return string|null
+     */
+    public function getClassPath()
+    {
+        return $this->_classPath;    
+    }
+    
+    /**
      * Set resource loader.
      * 
      * @param Zf_Resource_Loader
@@ -35,7 +62,7 @@ class Zf_Resource_LoaderAdapter
     /**
      * Return resource loader.
      * 
-     * @return Zf_Resource_Exception
+     * @return Zf_Resource_Loader
      */
     public function getResourceLoader()
     {

@@ -49,15 +49,4 @@ class Zf_Resource_Adapter_Service extends Zf_Resource_LoaderAdapter
     {
         return $this->getResourceLoader()->getModel($name); 
     }
-    
-    /**
-     * Return DAO.
-     * 
-     * @param string $name DAO name
-     * @return Zf_Resource_LoaderAdapter
-     */
-    public function getDao($name)
-    {
-        return $this->getResourceLoader()->getDao($name); 
-    }
 }
