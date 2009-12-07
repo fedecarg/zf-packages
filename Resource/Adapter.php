@@ -14,12 +14,12 @@
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
  * @version     $Id: $
  */
-class Zf_Resource_LoaderAdapter
+class Zf_Resource_Adapter
 {
     /**
-     * @var null|Zf_Resource_Loader
+     * @var null|Zf_Resource_Locator
      */
-    protected $_resourceLoader = null;
+    protected $_resourceLocator = null;
     
     /**
      * @var null|string Class path
@@ -49,27 +49,27 @@ class Zf_Resource_LoaderAdapter
     }
     
     /**
-     * Set resource loader.
+     * Set resource locator.
      * 
-     * @param Zf_Resource_Loader
+     * @param Zf_Resource_Locator
      * @return void
      */
-    public function setResourceLoader(Zf_Resource_Loader $object)
+    public function setResourceLocator(Zf_Resource_Locator $object)
     {
-        $this->_resourceLoader = $object;
+        $this->_resourceLocator = $object;
     }
     
     /**
-     * Return resource loader.
+     * Return resource locator.
      * 
-     * @return Zf_Resource_Loader
+     * @return Zf_Resource_Locator
      */
-    public function getResourceLoader()
+    public function getResourceLocator()
     {
-        if (null === $this->_resourceLoader) {
-            throw new Zf_Resource_Exception('Zf_Resource_Loader is not defined'); 
+        if (null === $this->_resourceLocator) {
+            throw new Zf_Resource_Exception('Zf_Resource_Locator is not defined'); 
         }
         
-        return $this->_resourceLoader; 
+        return $this->_resourceLocator; 
     }
 }

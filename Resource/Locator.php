@@ -14,7 +14,7 @@
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
  * @version     $Id: $
  */
-class Zf_Resource_Loader
+class Zf_Resource_Locator
 {
     const MODEL_CLASS_SUFFIX    = 'Model';
     const MODEL_DIR             = 'models';
@@ -41,49 +41,64 @@ class Zf_Resource_Loader
      * Return resource.
      * 
      * @param string $resourceName
-     * @return Zf_Resource_LoaderAdapter
+     * @return object
      */
     public function getResource($resourceName)
     {        
         return Zend_Registry::get($resourceName);
     }
     
+    /**
+     * Check whether a resource has been registered or not.
+     * 
+     * @param string $resourceName
+     * @return boolean
+     */
+    public function hasResource($resourceName)
+    {
+        return Zend_Registry::isRegistered($resourceName);
+    }    
     
     /**
-     * Create resource.
+     * Locate resource.
      * 
      * @param string $className
      * @param string $classPath
-     * @return Zf_Resource_LoaderAdapter
+     * @return void
      */
-    public function createResource($className, $classPath)
+    public function locate($className, $classPath)
     {
-        $resourceName = 'Resource_' . $className;
-        if (!Zend_Registry::isRegistered($resourceName)) {
-            require_once $classPath.'/'.$className.'.php';
-            $obj = new $className;
-            if ($obj instanceof Zf_Resource_LoaderAdapter) {
-                $obj->setClassPath($classPath.'/'.basename($classPath));
-                $obj->setResourceLoader($this);
-            }
-            $this->setResource($resourceName, $obj); 
+        $file = $classPath.'/'.$className.'.php';
+        if ($this->hasResource($className)) {
+            throw new Zf_Resource_Exception('Resource exists: ' . $className);
+        } elseif (!file_exists($file)) {
+            throw new Zf_Resource_Exception('No such file: '. $file);
         }
         
-        return $this->getResource($resourceName);
+        require_once $file;
+        $obj = new $className;
+        if ($obj instanceof Zf_Resource_Adapter) {
+            $obj->setClassPath($classPath.'/'.basename($classPath));
+            $obj->setResourceLocator($this);
+        }
+        $this->setResource($className, $obj);
     }
     
     /**
      * Return a sigle instance of a model object.
      * 
      * @param string $name Model name
-     * @return Zf_Resource_LoaderAdapter
+     * @return Zf_Resource_Adapter
      */
     public function getModel($name)
     {
         $className = $name . self::MODEL_CLASS_SUFFIX;
-        $classPath = APPLICATION_PATH . '/' . self::MODEL_DIR;
+        if (!$this->hasResource($className)) {
+            $classPath = APPLICATION_PATH . '/' . self::MODEL_DIR;
+            $this->locate($className, $classPath);
+        }
         
-        return $this->createResource($className, $classPath);
+        return $this->getResource($className);
 
     }
     
@@ -91,14 +106,17 @@ class Zf_Resource_Loader
      * Return a sigle instance of a service object.
      * 
      * @param string $name Service name
-     * @return Zf_Resource_LoaderAdapter
+     * @return Zf_Resource_Adapter
      */
     public function getService($name)
     {
         $className = $name . self::SERVICE_CLASS_SUFFIX;
-        $classPath = APPLICATION_PATH . '/' . self::SERVICE_DIR;
+        if (!$this->hasResource($className)) {
+            $classPath = APPLICATION_PATH . '/' . self::SERVICE_DIR;
+            $this->locate($className, $classPath);
+        }
         
-        return $this->createResource($className, $classPath);
+        return $this->getResource($className);
     }
     
     /**
@@ -110,8 +128,11 @@ class Zf_Resource_Loader
     public function getDao($name)
     {
         $className = $name . self::DAO_CLASS_SUFFIX;
-        $classPath = APPLICATION_PATH . '/' . self::DAO_DIR;
+        if (!$this->hasResource($className)) {
+            $classPath = APPLICATION_PATH . '/' . self::DAO_DIR;
+            $this->locate($className, $classPath);
+        }
         
-        return $this->createResource($className, $classPath);
+        return $this->getResource($className);
     }
 }

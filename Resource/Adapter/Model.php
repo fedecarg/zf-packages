@@ -16,17 +16,17 @@
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
  * @version     $Id: $
  */
-class Zf_Resource_Adapter_Model extends Zf_Resource_LoaderAdapter
+class Zf_Resource_Adapter_Model extends Zf_Resource_Adapter
 {    
     /**
      * Return Model.
      * 
      * @param string $name Model name
-     * @return Zf_Resource_LoaderAdapter
+     * @return Zf_Resource_Adapter
      */
     public function getModel($name)
     {
-        return $this->getResourceLoader()->getModel($name); 
+        return $this->getResourceLocator()->getModel($name); 
     }
     
     /**
@@ -37,6 +37,6 @@ class Zf_Resource_Adapter_Model extends Zf_Resource_LoaderAdapter
      */
     public function getDao($name)
     {
-        return $this->getResourceLoader()->getDao($name); 
+        return $this->getResourceLocator()->getDao($name); 
     }
 }

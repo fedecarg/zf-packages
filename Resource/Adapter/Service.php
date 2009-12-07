@@ -16,7 +16,7 @@
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
  * @version     $Id: $
  */
-class Zf_Resource_Adapter_Service extends Zf_Resource_LoaderAdapter
+class Zf_Resource_Adapter_Service extends Zf_Resource_Adapter
 {    
     /**
      * Return an instance of the front controller.
@@ -43,10 +43,10 @@ class Zf_Resource_Adapter_Service extends Zf_Resource_LoaderAdapter
      * Return Model.
      * 
      * @param string $name Model name
-     * @return Zf_Resource_LoaderAdapter
+     * @return Zf_Resource_Adapter
      */
     public function getModel($name)
     {
-        return $this->getResourceLoader()->getModel($name); 
+        return $this->getResourceLocator()->getModel($name); 
     }
 }
