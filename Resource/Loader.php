@@ -16,6 +16,15 @@
  */
 class Zf_Resource_Loader
 {
+    const MODEL_CLASS_SUFFIX    = 'Model';
+    const MODEL_DIR             = 'models';
+    
+    const SERVICE_CLASS_SUFFIX  = 'Service';
+    const SERVICE_DIR           = 'services';
+    
+    const DAO_CLASS_SUFFIX      = 'Dao';
+    const DAO_DIR               = 'daos';
+    
     /**
      * Set resource.
      * 
@@ -32,7 +41,7 @@ class Zf_Resource_Loader
      * Return resource.
      * 
      * @param string $resourceName
-     * @return object
+     * @return Zf_Resource_LoaderAdapter
      */
     public function getResource($resourceName)
     {        
@@ -71,8 +80,8 @@ class Zf_Resource_Loader
      */
     public function getModel($name)
     {
-        $className = $name . 'Model';
-        $classPath = APPLICATION_PATH . '/models';
+        $className = $name . self::MODEL_CLASS_SUFFIX;
+        $classPath = APPLICATION_PATH . '/' . self::MODEL_DIR;
         
         return $this->createResource($className, $classPath);
 
@@ -86,8 +95,8 @@ class Zf_Resource_Loader
      */
     public function getService($name)
     {
-        $className = $name . 'Service';
-        $classPath = APPLICATION_PATH . '/services';
+        $className = $name . self::SERVICE_CLASS_SUFFIX;
+        $classPath = APPLICATION_PATH . '/' . self::SERVICE_DIR;
         
         return $this->createResource($className, $classPath);
     }
@@ -100,8 +109,8 @@ class Zf_Resource_Loader
      */
     public function getDao($name)
     {
-        $className = $name . 'Dao';
-        $classPath = APPLICATION_PATH . '/daos';
+        $className = $name . self::DAO_CLASS_SUFFIX;
+        $classPath = APPLICATION_PATH . '/' . self::DAO_DIR;
         
         return $this->createResource($className, $classPath);
     }
