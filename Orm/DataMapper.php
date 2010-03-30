@@ -54,11 +54,6 @@ class Zf_Orm_DataMapper
     protected $map = array();
 
     /**
-     * @var Zf_Orm_Entity
-     */
-    protected $entity = null;
-
-    /**
      * Class constructor.
      *
      * @param array $map
@@ -131,6 +126,7 @@ class Zf_Orm_DataMapper
     /**
      * Map fields to properties.
      *
+     * @param Zf_Orm_Entity $entity
      * @return array
      */
     public function map(Zf_Orm_Entity $entity)
