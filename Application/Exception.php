@@ -31,7 +31,7 @@
  * @category    Zf
  * @package     Zf_Application
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
- * @copyright   Copyright (c) 2010 Federico Cargnelutti, Kewnode Ltd, UK.
+ * @copyright   Copyright (c) 2010 Federico Cargnelutti
  * @license     New BSD License
  * @version     $Id: $
  */
@@ -40,7 +40,7 @@
  * @category    Zf
  * @package     Zf_Application
  * @author      Federico Cargnelutti <fedecarg@gmail.com>
- * @copyright   Copyright (c) 2010 Federico Cargnelutti, Kewnode Ltd, UK.
+ * @copyright   Copyright (c) 2010 Federico Cargnelutti
  * @license     New BSD License
  * @version     $Id: $
  */
