@@ -50,8 +50,8 @@ class Zf_Orm_DataSource
 {    
     const SUPPLIER_SERVER     = 'master';
     const CONSUMER_SERVER     = 'slave';
-    const ACTIVE_CONNECTION   = '%s_datasource_connection_%s';
-    const FAILED_CONNECTIONS  = '%s_datasource_connections';
+    const ACTIVE_CONNECTION   = '%s_datasource_active_connection_%s';
+    const FAILED_CONNECTIONS  = '%s_datasource_failed_connections';
     
     /**
      * @var array
