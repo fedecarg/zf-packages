@@ -59,7 +59,7 @@ class Zf_Orm_DataSource
     private $config = array();
     
     /**
-     * @var Zend_Cache_Backend_ExtendedInterface
+     * @var Zend_Cache_Core
      */
     private $cache = null;
     
@@ -76,11 +76,11 @@ class Zf_Orm_DataSource
     /**
      * Class constructor.
      *
-     * @param array $config
-     * @param Zend_Cache_Backend_ExtendedInterface $cache
+     * @param array|Zend_Config $config
+     * @param Zend_Cache_Core $cache
      * @param string $cacheTag
      */
-    public function __construct(array $config, Zend_Cache_Backend_ExtendedInterface $cache, $cacheTag)
+    public function __construct($config, Zend_Cache_Core $cache, $cacheTag)
     {
         $this->setConfig($config);
         $this->setCache($cache);
@@ -90,9 +90,9 @@ class Zf_Orm_DataSource
     /**
      * Set configuration array.
      *
-     * @return array
+     * @return array|Zend_Config $config
      */
-    public function setConfig(array $config)
+    public function setConfig($config)
     {
         if ($config instanceof Zend_Config) {
             $config = $config->toArray();
@@ -111,14 +111,14 @@ class Zf_Orm_DataSource
     }
     
     /**
-     * Set instance of Zend_Cache_Backend_ExtendedInterface.
+     * Set instance of Zend_Cache_Core.
      *
-     * @param Zend_Cache_Backend_ExtendedInterface $instance
+     * @param Zend_Cache_Core $cache
      * @return void
      */
-    public function setCache(Zend_Cache_Backend_ExtendedInterface $instance)
+    public function setCache(Zend_Cache_Core $cache)
     {
-        $this->cache = $instance;
+        $this->cache = $cache;
     }
     
     /**
@@ -221,7 +221,7 @@ class Zf_Orm_DataSource
      */
     public function createConnection($server)
     {
-        $config = $this->getConfigFromRegistry();
+        $config = $this->getConfig();
         foreach ($config as $key => $value) {
             if ('servers' !== $key && !array_key_exists($key, $server)) {
                 $server[$key] = $value;
