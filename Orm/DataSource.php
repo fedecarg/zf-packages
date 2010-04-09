@@ -90,7 +90,8 @@ class Zf_Orm_DataSource
     /**
      * Set configuration array.
      *
-     * @return array|Zend_Config $config
+     * @param array|Zend_Config $config
+     * @return void
      */
     public function setConfig($config)
     {
@@ -122,9 +123,9 @@ class Zf_Orm_DataSource
     }
     
     /**
-     * Return instance of Zend_Cache_Backend_ExtendedInterface.
+     * Return instance of Zend_Cache_Core.
      *
-     * @return Zend_Cache_Backend_ExtendedInterface
+     * @return Zend_Cache_Core
      */
     public function getCache()
     {
@@ -168,7 +169,7 @@ class Zf_Orm_DataSource
     /**
      * Return an instance of Zend_Db_Adapter_Abstract.
      * 
-     * @param string $server Options: master, slave
+     * @param string $server master (supplier) or slave (consumer)
      * @return Zend_Db_Adapter_Abstract
      * @throws Zf_Orm_DataSourceException
      */
@@ -204,7 +205,7 @@ class Zf_Orm_DataSource
     /**
      * Verify that a given connection name exists.
      * 
-     * @param string $namespace
+     * @param string $name
      * @return boolean
      */
     public function hasConnection($name)
@@ -215,7 +216,7 @@ class Zf_Orm_DataSource
     /**
      * Create an instance of Zend_Db_Adapter_Abstract.
      *
-     * @param array $server Server info
+     * @param array $server master (supplier) or slave (consumer)
      * @return Zend_Db_Adapter_Abstract|false
      * @see Zend_Db
      */
