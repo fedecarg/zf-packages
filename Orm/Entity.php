@@ -102,7 +102,7 @@ abstract class Zf_Orm_Entity
     public function __call($method, $args)
     {
         $type = substr($method, 0, 3);
-        $property = strtolower(preg_replace('/(?!^)[[:upper:]]/', '_' . '\0', substr($method, 3)));
+        $property = Zf_Orm_StringInflector::underscore(substr($method, 3));
         if ('get' === $type) {
             if (property_exists($this, $property)) {
                 return $this->$property;
