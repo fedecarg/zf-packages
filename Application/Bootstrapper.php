@@ -44,26 +44,23 @@
  * @license     New BSD License
  * @version     $Id: $
  */
-abstract class Zf_Application_Bootstrapper
+class Zf_Application_Bootstrapper
 {
     // Environments
     const ENV_LOCAL        = 'loc';
     const ENV_DEVELOPMENT  = 'dev';
-    const ENV_TEST         = 'tst';
-    const ENV_INTEGRATION  = 'int';
     const ENV_STAGING      = 'stg';
-    const ENV_DEMO         = 'dmo';
     const ENV_PRODUCTION   = 'prd';
     
     /**
      * @var array
      */
-    private $config = array();
+    protected $config = array();
     
     /**
      * @var boolean
      */
-    private $isCli = false;
+    protected $isCli = false;
      
     /**
      * Constructor
@@ -102,6 +99,7 @@ abstract class Zf_Application_Bootstrapper
      */
     public function run()
     {
+        $this->initCache();
         $this->initOrm();
         if (false === $this->isCli || self::ENV_TEST == APPLICATION_ENV) {
             $this->initSession();
@@ -109,7 +107,6 @@ abstract class Zf_Application_Bootstrapper
         $this->initLog();
         $this->initControllers();
         $this->initRouter();
-        $this->initCache();
         $this->initLayout();
     }
     
@@ -147,7 +144,6 @@ abstract class Zf_Application_Bootstrapper
         require_once 'Zend/Loader/Autoloader.php';
         $loader = Zend_Loader_Autoloader::getInstance();
         $loader->registerNamespace('Zf_');
-        $loader->registerNamespace(APPLICATION_NAME . '_');
     }
     
 
@@ -173,6 +169,21 @@ abstract class Zf_Application_Bootstrapper
         $this->config = new Zend_Config(include APPLICATION_PATH . '/config/settings.php');
         Zend_Registry::set('Zend_Config', $this->config);
     }
+    
+    /**
+     * Initialize Zend_Cache.
+     * 
+     * @return void
+     * @throws Zf_Application_Exception
+     */
+    public function initCache()
+    {
+        if (!isset($this->config->cache)) {
+            throw new Zf_Application_Exception(sprintf('%s: Configuration not defined.', __METHOD__));
+        }
+        $cache = Zend_Cache::factory($this->config->cache->frontend, $this->config->cache->backend);
+        Zend_Registry::set('Zend_Cache', $cache);
+    }
 
     /**
      * Initialize Zf_Orm.
@@ -181,8 +192,8 @@ abstract class Zf_Application_Bootstrapper
      */
     public function initOrm()
     {
-        $connection = include APPLICATION_PATH . '/config/database.php';
-        $dataSource = new Zf_Orm_DataSource($connection);
+        $config = include APPLICATION_PATH . '/config/database.php';
+        $dataSource = new Zf_Orm_DataSource($config, Zend_Registry::get('Zend_Cache'), 'tag');
         
         $manager = Zf_Orm_Manager::getInstance();
         $manager->setDataSource($dataSource);
@@ -211,21 +222,6 @@ abstract class Zf_Application_Bootstrapper
             $writer = new Zend_Log_Writer_Db($connection, 'log', $mapper);
         }
         Zend_Registry::set('Zend_Log', new Zend_Log($writer));
-    }
-
-    /**
-     * Initialize Zend_Cache.
-     * 
-     * @return void
-     * @throws Zf_Application_Exception
-     */
-    public function initCache()
-    {
-        if (!isset($this->config->cache)) {
-            throw new Zf_Application_Exception(sprintf('%s: Configuration values not defined.', __METHOD__));
-        }
-        $cache = Zend_Cache::factory($this->config->cache->frontend, $this->config->cache->backend);
-        Zend_Registry::set('Zend_Cache', $cache);
     }
     
     /**
